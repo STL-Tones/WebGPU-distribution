@@ -23,8 +23,14 @@ else (EMSCRIPTEN)
         set(WGPU ${CMAKE_CURRENT_SOURCE_DIR})
         if (NOT ARCH)
             set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
+            # Normalise to the names wgpu-native uses for its release archives.
+            # MSVC reports AMD64 / ARM64 / x86; the archives are x86_64 / aarch64 / i686.
             if (ARCH STREQUAL "AMD64")
                 set(ARCH "x86_64")
+            elseif (ARCH STREQUAL "ARM64")
+                set(ARCH "aarch64")
+            elseif (ARCH STREQUAL "x86")
+                set(ARCH "i686")
             endif()
         endif()
 
