@@ -22,9 +22,19 @@ else (EMSCRIPTEN)
 
         set(WGPU ${CMAKE_CURRENT_SOURCE_DIR})
         if (NOT ARCH)
-            set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
-            if (ARCH STREQUAL "AMD64")
+            # On Windows CMAKE_SYSTEM_PROCESSOR reports the host CPU, not the
+            # target one (e.g. ARM64 host building with -A x64), so prefer the
+            # compiler's target architecture when it's known.
+            if (MSVC AND CMAKE_CXX_COMPILER_ARCHITECTURE_ID)
+                set(ARCH ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID})
+            else()
+                set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
+            endif()
+            string(TOUPPER "${ARCH}" ARCH_U)
+            if (ARCH_U STREQUAL "AMD64" OR ARCH_U STREQUAL "X64")
                 set(ARCH "x86_64")
+            elseif (ARCH_U STREQUAL "X86")
+                set(ARCH "i686")
             endif()
         endif()
 
